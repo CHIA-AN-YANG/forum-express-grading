@@ -1,6 +1,8 @@
 node_modules/ 
 temp/
-upload/
+upload/user-upload
+tigger/
 
 .DS_Store
 .env
+note.md
