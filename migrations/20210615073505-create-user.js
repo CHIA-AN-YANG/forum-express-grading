@@ -11,16 +11,19 @@ module.exports = {
       name: {
         type: Sequelize.STRING,
         allowNull: false,
-        is: /[\w\d\S]/s
+        is: /[\w\d\S]/s,
+        defaultValue: 'random'
       },
       email: {
         type: Sequelize.STRING,
         unique:true,
-        allowNull: false
+        allowNull: false,
+        defaultValue: 'random@randommail.com'
       },
       password: {
         type: Sequelize.STRING,
-        allowNull: false
+        allowNull: false,
+        defaultValue: 'random'
       },
       registeredAt: {
         allowNull: false,
