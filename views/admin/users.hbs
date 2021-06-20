@@ -23,11 +23,11 @@
         {{#if this.isAdmin}}
         <p>Admin</p>
         {{else}}
-        <p>Common User
+        <span>Common User&nbsp;
           <form action="/admin/users/{{this.id}}/toggleAdmin?_method=PUT" method="POST" style="display: inline;">
-            <button type="submit" class="btn btn-link">set as admin</button>
+            <button type="submit" class="btn btn-small">set as admin</button>
           </form>
-        </p>
+        </span>
         {{/if}}
       </td>
     </tr>
