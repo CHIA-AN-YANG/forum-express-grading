@@ -5,6 +5,7 @@ const fs = require('fs')
 const imgur = require('imgur-node-api')
 const IMGUR_CLIENT_ID = '26b0737b69bb564'
 
+
 const adminController = {
   getUsers: (req, res) => {
     User.findAll({raw: true})
@@ -67,7 +68,7 @@ const adminController = {
 
             if (process.env.NODE_ENV === 'production'){
                     imgStorage = img.data.link
-              }else{imgStorage = `/upload/user-upload/${file.originalname}`}
+              }else{imgStorage = `/upload/${file.originalname}`}
 
             return Restaurant.create({
               name: req.body.name,
@@ -90,7 +91,8 @@ const adminController = {
           tel: req.body.tel,
           address: req.body.address,
           opening_hours: req.body.opening_hours,
-          description: req.body.description
+          description: req.body.description,
+          image: null
         }).then((restaurant) => {
           req.flash('success_messages', 'restaurant was successfully created')
           return res.redirect('/admin/restaurants')
@@ -118,7 +120,7 @@ const adminController = {
             let imgStorage
             if (process.env.NODE_ENV === 'production'){
                     imgStorage = img.data.link
-              }else{imgStorage = `/upload/user-upload/${file.originalname}`}
+              }else{imgStorage = `/upload/${file.originalname}`}
 
             restaurant.update({
               name: req.body.name,
@@ -126,7 +128,7 @@ const adminController = {
               address: req.body.address,
               opening_hours: req.body.opening_hours,
               description: req.body.description,
-              image: imgStorage
+              image: file ? imgStorage : restaurant.image
             })                        
           })          
           .then(() => {
