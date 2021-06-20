@@ -6,19 +6,19 @@ const passport = require('../config/passport')
 const multer = require('multer')
 const upload = multer({ dest: 'temp/' })
 
-// const helpers = require('../_helpers.js')
+const helpers = require('../_helpers.js')
 
 
 module.exports = (app, passport) => {
   
   const authenticated = (req, res, next) => {
-    if (req.isAuthenticated() ) { return next() }
+    if (helpers.ensureAuthenticated(req) ) { return next() }
     res.redirect('/signin')
   }
 
   const authenticatedAdmin = (req, res, next) => {
-    if (req.user) { 
-      if (req.user.isAdmin) { return next() }
+    if (helpers.ensureAuthenticated(req)) { 
+      if (helpers.getUser(req).isAdmin) { return next() }
       return res.redirect('/')
     }
     res.redirect('/signin')
