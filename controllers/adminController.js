@@ -19,10 +19,14 @@ const adminController = {
   toggleAdmin: (req, res) => {
     User.findByPk(req.params.id)
     .then(user => {
-      user.isAdmin = true
-      user.save()
+      user.isAdmin = !user.isAdmin
+      return user.save()
     })
-    .then(user => res.redirect('/admin/users'))
+    .then(user =>{ 
+      if(user.isAdmin){req.flash('success_messages', `恭喜${user.name}成為管理員~!😋😋`)
+      }else{req.flash('success_messages', `${user.name}得罪了方丈還想跑，推下神壇！`)}
+      return res.redirect('/admin/users')}
+    )
     .catch(err => res.status(422).json(err))
   },
 
@@ -53,10 +57,6 @@ const adminController = {
 //send created restaurant
   postRestaurant: (req, res) => {
     const { file } = req
-    if(!req.body.name){
-      req.flash('error_messages', "name didn't exist")
-      return res.redirect('back')
-    }
     if (file) {
       imgur.setClientID(IMGUR_CLIENT_ID)
       imgur.upload(file.path, (err, img) => {

@@ -21,7 +21,11 @@
       <td>{{this.email}}</td>
       <td>
         {{#if this.isAdmin}}
-        <p>Admin</p>
+        <span>Admin
+          <form action="/admin/users/{{this.id}}/toggleAdmin?_method=PUT" method="POST" style="display: inline;">
+            <button type="submit" class="btn btn-small">推下神壇！</button>
+          </form>
+        </span>
         {{else}}
         <span>Common User&nbsp;
           <form action="/admin/users/{{this.id}}/toggleAdmin?_method=PUT" method="POST" style="display: inline;">
