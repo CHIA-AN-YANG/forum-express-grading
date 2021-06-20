@@ -14,7 +14,7 @@ const adminController = {
     .catch(err => res.status(422).json(err))
   },
 
-  setAdmin: (req, res) => {
+  toggleAdmin: (req, res) => {
     User.findByPk(req.params.id)
     .then(user => {
       user.isAdmin = true

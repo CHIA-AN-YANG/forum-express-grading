@@ -6,19 +6,18 @@ const passport = require('../config/passport')
 const multer = require('multer')
 const upload = multer({ dest: 'temp/' })
 
-const helpers = require('../_helpers.js')
-//req.isAuthenticated(), authenticated, authenticatedAdmin, req.user
+// const helpers = require('../_helpers.js')
 
 
 module.exports = (app, passport) => {
   
   const authenticated = (req, res, next) => {
-    if (helpers.ensureAuthenticated(req) ) { return next() }
+    if (req.isAuthenticated() ) { return next() }
     res.redirect('/signin')
   }
 
   const authenticatedAdmin = (req, res, next) => {
-    if (helpers.ensureAuthenticated(req) ) { 
+    if (req.user.isAdmin ) { 
       if (helpers.getUser(req).isAdmin) { return next() }
       return res.redirect('/')
     }
@@ -45,7 +44,7 @@ module.exports = (app, passport) => {
   app.get('/restaurants/:id', authenticated, restController.getRestaurant)
 
   //admin
-  app.put('/admin/users/:id/toggleAdmin', authenticatedAdmin, adminController.setAdmin )
+  app.put('/admin/users/:id/toggleAdmin', authenticatedAdmin, adminController.toggleAdmin )
   app.get('/admin/users', authenticatedAdmin, adminController.getUsers )
   
   app.get('/admin/restaurants/create', authenticatedAdmin, upload.single('image'),  adminController.createRestaurant) //go to create.hbs  
