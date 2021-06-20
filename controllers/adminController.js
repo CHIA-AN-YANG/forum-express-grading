@@ -6,6 +6,7 @@ const imgur = require('imgur-node-api')
 const IMGUR_CLIENT_ID = process.env.IMGUR_CLIENT_ID
 
 
+
 const adminController = {
   getUsers: (req, res) => {
     User.findAll({raw: true})
@@ -103,7 +104,6 @@ const adminController = {
       imgur.setClientID(IMGUR_CLIENT_ID)
       imgur.upload(file.path, (err, img) => {
         if (err) console.log('Error: ', err)
-        fs.writeFile(`upload/${file.originalname}`, data, () => {
           return Restaurant.findByPk(req.params.id)
           .then((restaurant) => {
             restaurant.update({
@@ -119,7 +119,6 @@ const adminController = {
             req.flash('success_messages', '餐廳已成功更新(含檔案)！')
             return res.redirect('/admin/restaurants')
           })
-        })
       })
     } else {
       Restaurant.findByPk(req.params.id)
