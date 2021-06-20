@@ -14,15 +14,43 @@ const adminController = {
     .catch(err => res.status(422).json(err))
   },
 
-  setAdmin: (req, res) => {
+  toggleAdmin: (req, res) => {
     User.findByPk(req.params.id)
     .then(user => {
-      user.isAdmin = true
+      user.isAdmin = !user.isAdmin
       user.save()
     })
     .then(user => res.redirect('/admin/users'))
     .catch(err => res.status(422).json(err))
   },
+  
+  //路由建構中 尚未完成
+  // editUser:(req, res) => {
+  //   if(!req.body.name){
+  //     req.flash('error_messages', "name didn't exist")
+  //     return res.redirect('back')
+  //   }
+  //   User.findByPk(req.params.id)
+  //   .then((user) => {
+  //     user.name= req.body.name
+  //     user.email= req.body.email
+  //     return user.save() 
+  //   })
+  //   .then(() => {
+  //     req.flash('success_messages', '個人檔案已成功更新！')
+  //     return res.redirect('/admin/user')
+  //   })
+  //   .catch(err => res.status(422).json(err))
+  // },       
+
+  // getUser: (req, res) => {
+  //   User.findByPk(req.params.id)
+  //   .then(user => {
+  //     return res.render('/admin/users/:id', {user:user})
+  //   })
+  //   .catch(err => res.status(422).json(err))
+  // },
+
 
   getRestaurants: (req, res) => {
     Restaurant.findAll({raw: true})

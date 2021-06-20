@@ -45,8 +45,10 @@ module.exports = (app, passport) => {
   app.get('/restaurants/:id', authenticated, restController.getRestaurant)
 
   //admin
-  app.put('/admin/users/:id/toggleAdmin', authenticatedAdmin, adminController.setAdmin )
-  app.get('/admin/users', authenticatedAdmin, adminController.getUsers )
+  app.post('/admin/users/:id/edit', authenticatedAdmin, adminController.editUser )
+  app.put('/admin/users/:id/toggleAdmin', authenticatedAdmin, adminController.toggleAdmin )
+  app.get('/admin/users/:id', authenticatedAdmin, adminController.getUser )   //路由建構中 尚未完成
+  app.get('/admin/users', authenticatedAdmin, adminController.getUsers )      //路由建構中 尚未完成
   
   app.get('/admin/restaurants/create', authenticatedAdmin, upload.single('image'),  adminController.createRestaurant) //go to create.hbs  
   app.get('/admin/restaurants', authenticatedAdmin, adminController.getRestaurants)                                   //view all restaurants in admin mode
