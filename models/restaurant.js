@@ -6,6 +6,7 @@ module.exports = (sequelize, DataTypes) => {
   class Restaurant extends Model {
 
     static associate(models) {
+      Restaurant.belongsTo(models.Category, {foreignKey: { name: 'CategoryId' }})
     }
   };
   Restaurant.init({
