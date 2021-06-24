@@ -13,6 +13,17 @@
     <label for="tel">Tel</label>
     <input type="text" class="form-control" name="tel" id="tel" placeholder="Enter tel" value="{{restaurant.tel}}">
   </div>
+  
+  <div class="form-group">
+    <label for="category">Category</label>
+    <select clss="form-control" name="categoryId" id="category">
+      {{#each category}}
+      <option value="{{this.id}}"
+        {{#ifCond this.id ../restaurant.CategoryId}}selected{{/ifCond}}
+        >{{this.name}}</option>
+      {{/each}}
+    </select>
+  </div>
 
   <div class="form-group">
     <label for="address">Address</label>

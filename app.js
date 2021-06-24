@@ -4,7 +4,11 @@ const app = express()
 if (process.env.NODE_ENV !== 'production') {require('dotenv').config() }
 const PORT = process.env.PORT || 3000
 
-app.engine('hbs', exphbs({ defaultLayout: 'main', extname: '.hbs' })) 
+app.engine('hbs', exphbs({ 
+  defaultLayout: 'main',
+  extname: '.hbs',
+  helpers: require('./config/handlebars-helpers') 
+})) 
 app.set('view engine', 'hbs')
 
 //folder paths
@@ -15,10 +19,10 @@ app.use('/upload', express.static(__dirname + '/upload'))
 const session = require('express-session')
 const passport = require('passport')
 const flash = require('connect-flash')
-app.use(session({ 
+app.use(session({
   secret: 'nanana',    //when using env: process.env.SESSION_SECRET 
   resave: true, 
-  saveUninitialized: false 
+  saveUninitialized: true 
 }))
 app.use(passport.initialize())
 app.use(passport.session())
