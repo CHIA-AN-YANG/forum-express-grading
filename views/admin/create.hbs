@@ -17,6 +17,9 @@
   <div class="form-group">
     <label for="category">Category</label>
     <select clss="form-control" name="categoryId" id="category">
+      {{#unless restaurant}}
+      <option value="" selected>選擇一個類別</option>
+      {{/unless}}
       {{#each category}}
       <option value="{{this.id}}"
         {{#ifCond this.id ../restaurant.CategoryId}}selected{{/ifCond}}

@@ -2,6 +2,7 @@ const express = require('express')
 const restController = require('../controllers/restController.js')
 const adminController = require('../controllers/adminController.js')
 const userController = require('../controllers/userController.js')
+const categoryController = require('../controllers/categoryController.js')
 const passport = require('../config/passport')
 const multer = require('multer')
 const upload = multer({ dest: 'temp/' })
@@ -47,6 +48,8 @@ module.exports = (app, passport) => {
   app.put('/admin/users/:id/toggleAdmin', authenticatedAdmin, adminController.toggleAdmin )
   app.get('/admin/users', authenticatedAdmin, adminController.getUsers )
   
+  app.get('/admin/categories', authenticatedAdmin, categoryController.getCategories)
+
   app.get('/admin/restaurants/create', authenticatedAdmin, upload.single('image'),  adminController.createRestaurant) //go to create.hbs  
   app.get('/admin/restaurants', authenticatedAdmin, adminController.getRestaurants)                                   //view all restaurants in admin mode
   app.post('/admin/restaurants', authenticatedAdmin, upload.single('image'), adminController.postRestaurant)          //create a restaurant
