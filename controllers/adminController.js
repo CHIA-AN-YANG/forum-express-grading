@@ -36,7 +36,7 @@ const adminController = {
     return Restaurant.findByPk(req.params.id, {raw:true, nest:true, include: [Category]})
     .then(restaurant => { 
       console.log('res:', restaurant)
-      return res.render('admin/restaurant', {restaurant:restaurant}) 
+      return res.render('restaurant', {restaurant:restaurant}) 
     })
     .catch(err => res.status(422).json(err))
   },

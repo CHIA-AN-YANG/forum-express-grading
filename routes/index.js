@@ -2,6 +2,7 @@ const express = require('express')
 const restController = require('../controllers/restController.js')
 const adminController = require('../controllers/adminController.js')
 const userController = require('../controllers/userController.js')
+const commentController = require('../controllers/commentController.js')
 const categoryController = require('../controllers/categoryController.js')
 const passport = require('../config/passport')
 const multer = require('multer')
@@ -43,10 +44,12 @@ module.exports = (app, passport) => {
   //common user
   app.get('/restaurants', authenticated, restController.getRestaurants)
   app.get('/restaurants/:id', authenticated, restController.getRestaurant)
+  app.post('/comments', authenticated, commentController.postComment)
 
   //admin
   app.put('/admin/users/:id/toggleAdmin', authenticatedAdmin, adminController.toggleAdmin )
   app.get('/admin/users', authenticatedAdmin, adminController.getUsers )
+  app.delete('/comments/:id', authenticatedAdmin, commentController.deleteComment )
   
   app.get('/admin/categories', authenticatedAdmin, categoryController.getCategories)
   app.get('/admin/categories/:id', authenticatedAdmin, categoryController.getCategories)
@@ -59,7 +62,6 @@ module.exports = (app, passport) => {
   app.post('/admin/restaurants', authenticatedAdmin, upload.single('image'), adminController.postRestaurant)          //create a restaurant
   app.get('/admin/restaurants/:id/edit', authenticatedAdmin, upload.single('image'),  adminController.editRestaurant) //go to create.hbs (with previous data show)
   app.delete('/admin/restaurants/:id', authenticatedAdmin, adminController.deleteRestaurant)                          //delete a restaurant
-  app.get('/admin/restaurants/:id', authenticatedAdmin, adminController.getRestaurant)
   app.post('/admin/restaurants/edit/:id', authenticatedAdmin, upload.single('image'), adminController.putRestaurant)  //send edit restaurant
   app.get('/admin', authenticatedAdmin, (req, res) => res.redirect('/admin/restaurants'))
 
