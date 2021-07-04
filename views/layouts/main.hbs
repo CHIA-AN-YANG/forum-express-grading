@@ -15,13 +15,13 @@
       <ul class="navbar-nav mr-auto">
       </ul>
       <div>
-        {{#if user.isAdmin}}
+        {{#if currentuser.isAdmin}}
           <a href="/admin/restaurants" style="color: white;margin-right: 10px;">餐廳後台</a>
-          <a href="/admin/users" style="color: white;margin-right: 10px;">使用者管理</a>
+          <a href="/admin/users" style="color: white;margin-right: 10px;">使用者清單</a>
         {{/if}}
-        {{#if user}}
-          <span style="color: white;margin-right: 10px;">Hi, {{user.email}}</span>
-          <a href="/users/{{user.id}}" style="color: white;margin-right: 10px;">Profile</a>
+        {{#if currentuser}}
+          <span style="color: white;margin-right: 10px;">Hi, {{currentuser.email}}</span>
+          <a href="/users/{{currentuser.id}}" style="color: white;margin-right: 10px;">Profile</a>
           <a href="/logout"><button class="btn btn-outline-success my-2 my-sm-0">LogOut</button></a>
         {{/if}}
       </div>

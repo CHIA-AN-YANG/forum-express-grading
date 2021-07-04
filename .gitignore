@@ -1,6 +1,7 @@
 node_modules/ 
 temp/
-upload/user-upload
+upload/
+！upload/pic-replacement.jpg
 tigger/
 
 .DS_Store

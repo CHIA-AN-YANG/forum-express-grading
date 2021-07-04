@@ -14,7 +14,8 @@ module.exports = {
     image: `https://loremflickr.com/320/240/restaurant,food/?random=${i}`,
     description: faker.lorem.text(),
     createdAt: new Date(),
-    updatedAt: new Date()
+    updatedAt: new Date(),
+    CategoryId: Math.floor(Math.random() * 6) * 10 + 1
   }))
   await queryInterface.bulkInsert( 'Restaurants', restaurantArr , {}) },
 
