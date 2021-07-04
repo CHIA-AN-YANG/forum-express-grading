@@ -3,7 +3,10 @@ const exphbs = require('express-handlebars')
 const app = express()
 if (process.env.NODE_ENV !== 'production') {require('dotenv').config() }
 const PORT = process.env.PORT || 3000
-
+const helpers = require('./_helpers.js')
+//for test only
+//req.isAuthenticated() => helpers.ensureAuthenticated(req)
+//req.user => helpers.getUser(req)
 
 app.engine('hbs', exphbs({ 
   defaultLayout: 'main',
@@ -21,7 +24,7 @@ const session = require('express-session')
 const passport = require('passport')
 const flash = require('connect-flash')
 app.use(session({
-  secret: 'nanana',    //when using env: process.env.SESSION_SECRET 
+  secret: process.env.SESSION_SECRET,    
   resave: true, 
   saveUninitialized: true 
 }))

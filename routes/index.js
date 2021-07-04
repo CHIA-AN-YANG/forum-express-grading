@@ -7,20 +7,20 @@ const categoryController = require('../controllers/categoryController.js')
 const passport = require('../config/passport')
 const multer = require('multer')
 const upload = multer({ dest: 'temp/' })
-
-const helpers = require('../_helpers.js')
-//isAuthenticated => helpers.ensureAuthenticated(req)
+//for test only
+//const helpers = require('../_helpers.js')
+//req.isAuthenticated() => helpers.ensureAuthenticated(req)
 //req.user => helpers.getUser(req)
 
 module.exports = (app, passport) => {
   
   const authenticated = (req, res, next) => {
-    if (helpers.ensureAuthenticated(req) ) { return next() }
+    if (req.isAuthenticated() ) { return next() }
     res.redirect('/signin')}
 
   const authenticatedAdmin = (req, res, next) => {
-    if (helpers.ensureAuthenticated(req)) { 
-      if (helpers.getUser(req).isAdmin) { return next() }
+    if (req.isAuthenticated()) { 
+      if (req.user.isAdmin) { return next() }
       return res.redirect('/')
     }
     res.redirect('/signin')
@@ -42,9 +42,9 @@ module.exports = (app, passport) => {
   app.get('/restaurants', authenticated, restController.getRestaurants)  
   app.get('/restaurants/:id', authenticated, restController.getRestaurant)
   app.post('/comments', authenticated, commentController.postComment)
-  app.get('/users/:id/edit', authenticated, userController.editUser)          //(generate user page with edit) users can edit their own profile (but not others)
-  app.get('/users/:id', authenticated, userController.getUser)                   //(generate user page only)users can view profile from other users
-  app.put('/users/:id', authenticated, upload.single('image'), userController.putUser) //admin can edit profile of all users
+  app.get('/users/:id/edit', authenticated, userController.editUser)                    //(generate user page with edit btn)
+  app.get('/users/:id', authenticated, userController.getUser)                          //(generate edit user page)
+  app.put('/users/:id', authenticated, upload.single('image'), userController.putUser)  //admin and account owner can edit profile of all users
   //admin
   app.put('/admin/users/:id/toggleAdmin', authenticatedAdmin, adminController.toggleAdmin )
   app.get('/admin/users', authenticatedAdmin, adminController.getUsers )

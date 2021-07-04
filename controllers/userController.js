@@ -5,7 +5,10 @@ const fs = require('fs')
 const imgur = require('imgur-node-api')
 const { urlencoded } = require('express')
 const IMGUR_CLIENT_ID = process.env.IMGUR_CLIENT_ID
-const helpers = require('../_helpers.js')
+//for test only
+//const helpers = require('../_helpers.js')
+//req.isAuthenticated() => helpers.ensureAuthenticated(req)
+//req.user => helpers.getUser(req)
 
 const userController = {
   signUpPage: (req, res) => {
@@ -51,7 +54,7 @@ const userController = {
   },
   getUser: (req, res) => {
     let isOwner = false
-    const owner = helpers.getUser(req)
+    const owner = req.user
     User.findByPk(req.params.id, { raw:true, nest:true })  
       .then((user) => { 
         if (user.id == owner.id || owner.isAdmin) isOwner = true
@@ -59,7 +62,7 @@ const userController = {
       .catch(err => res.status(422).json(err))
     },
   editUser: (req, res) => {
-    const owner = helpers.getUser(req)
+    const owner = req.user
     if(!owner.isAdmin && !(owner.id==req.params.id)){
       req.flash('warning_messages', "只有管理員有權限執行此操作。請登入管理員。")
       return res.redirect(`/users/${req.params.id}`)
