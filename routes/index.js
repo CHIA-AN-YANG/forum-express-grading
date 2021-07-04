@@ -15,8 +15,7 @@ module.exports = (app, passport) => {
   
   const authenticated = (req, res, next) => {
     if (helpers.ensureAuthenticated(req) ) { return next() }
-    res.redirect('/signin')
-  }
+    res.redirect('/signin')}
 
   const authenticatedAdmin = (req, res, next) => {
     if (helpers.ensureAuthenticated(req)) { 
@@ -25,6 +24,10 @@ module.exports = (app, passport) => {
     }
     res.redirect('/signin')
   }
+
+
+
+
   
   //router info middleware
   if (process.env.NODE_ENV !== 'production') {
@@ -32,8 +35,6 @@ module.exports = (app, passport) => {
       console.log(`method: ${req.method}, router: ${req.url}`)
       next() 
   })}
-
-
   //user login/out
   app.get('/signup', userController.signUpPage)
   app.post('/signup', userController.signUp)
@@ -42,10 +43,12 @@ module.exports = (app, passport) => {
   app.get('/logout', userController.logout)
 
   //common user
-  app.get('/restaurants', authenticated, restController.getRestaurants)
+  app.get('/restaurants', authenticated, restController.getRestaurants)  
   app.get('/restaurants/:id', authenticated, restController.getRestaurant)
   app.post('/comments', authenticated, commentController.postComment)
-
+  app.get('/users/:id/edit', authenticated, userController.editUser)          //(generate user page with edit) users can edit their own profile (but not others)
+  app.get('/users/:id', authenticated, userController.getUser)                   //(generate user page only)users can view profile from other users
+  app.put('/users/:id/edit', authenticated, upload.single('image'), userController.putUser) //admin can edit profile of all users
   //admin
   app.put('/admin/users/:id/toggleAdmin', authenticatedAdmin, adminController.toggleAdmin )
   app.get('/admin/users', authenticatedAdmin, adminController.getUsers )

@@ -11,6 +11,7 @@
       <th scope="col">Name</th>
       <th scope="col">Email</th>
       <th scope="col">Status</th>
+      <th scope="col">Profile</th>
     </tr>
   </thead>
   <tbody>
@@ -33,6 +34,14 @@
           </form>
         </span>
         {{/if}}
+      </td>
+      <td>
+        <form action="/users/{{this.id}}" method="GET" style="display: inline;">
+          <button type="submit" class="btn btn-small">View</button>
+        </form> 
+        <form action="/users/{{this.id}}/edit" method="GET" style="display: inline;">
+          <button type="submit" class="btn btn-small">Edit</button>
+        </form>       
       </td>
     </tr>
     {{/each}}

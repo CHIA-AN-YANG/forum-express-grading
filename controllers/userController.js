@@ -1,6 +1,10 @@
 const bcrypt = require('bcryptjs') 
 const db = require('../models')
 const User = db.User
+const fs = require('fs')
+const imgur = require('imgur-node-api')
+const { urlencoded } = require('express')
+const IMGUR_CLIENT_ID = process.env.IMGUR_CLIENT_ID
 
 const userController = {
   signUpPage: (req, res) => {
@@ -28,11 +32,7 @@ const userController = {
         return res.redirect('signin')})
         .catch(err => res.status(422).json(err))
 
-    })   
-  
-    
-
-  },
+    })},
 
   signInPage: (req, res) => {
     return res.render('signin')
@@ -47,7 +47,64 @@ const userController = {
     req.flash('success_messages', '登出成功！')
     req.logout()
     res.redirect('signin')
-  }
+  },
+  getUser: (req, res) => {
+    let isOwner = false
+    const currentUser = req.user
+    User.findByPk(req.params.id, { raw:true, nest:true })  
+      .then((user) => { 
+        if (user.id === currentUser.id || currentUser.isAdmin) isOwner = true
+        res.render('user', { user, isOwner } )})                                                  
+      .catch(err => res.status(422).json(err))
+    },
+  editUser: (req, res) => {
+    const owner = req.user
+    if(!owner.isAdmin && !(owner.id==req.params.id)){
+      req.flash('warning_messages', "只有管理員有權限執行此操作。請登入管理員。")
+      return res.redirect(`/users/${req.params.id}`)
+    }
+    User.findByPk(req.params.id, { raw:true, nest:true })  
+    .then((user) => { res.render('userEdit', { user })})
+  },
+  putUser: (req, res) => {
+    const { file } = req 
+    if(!req.body.name){
+      req.flash('warning_messages', "name doesn't exist")
+      return res.redirect('back')
+    }
+    if (file) {
+      imgur.setClientID(IMGUR_CLIENT_ID)
+      imgur.upload(file.path, (err, img) => {
+        if (err) console.error('Error: ', err)
+          return User.findByPk(req.params.id)          
+          .then((user) => {
+            user.update({
+              name: req.body.name,
+              email: req.body.email,
+              description: req.body.description,
+              image: file ? img.data.link : user.image
+            })                        
+          })          
+          .then(() => {
+            req.flash('success_messages', '個人資料已成功更新(含檔案)！')
+            return res.redirect(`/users/${req.params.id}`)
+          })
+      })
+    } else {
+      User.findByPk(req.params.id)
+      .then((user) => {
+        user.update({
+          name: req.body.name,
+          email: req.body.email,
+          description: req.body.description
+        }) 
+      })
+      .then(() => {
+        req.flash('success_messages', '個人資料已成功更新！')
+        return res.redirect(`/users/${req.params.id}`)
+      })
+    }
+  },
 }
 
 module.exports = userController
