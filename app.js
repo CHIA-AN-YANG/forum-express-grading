@@ -4,7 +4,6 @@ const app = express()
 if (process.env.NODE_ENV !== 'production') {require('dotenv').config() }
 const PORT = process.env.PORT || 3000
 const helpers = require('./_helpers.js')
-require ('newrelic');
 //for test only
 //req.isAuthenticated() => helpers.ensureAuthenticated(req)
 //req.user => helpers.getUser(req)
