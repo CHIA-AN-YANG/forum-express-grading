@@ -53,9 +53,21 @@ const restController = {
         res.render('restaurant', { restaurant:restaurant.toJSON() } //看似可以用 raw:true nest:true 來簡化
         )})                                                         //，實際上一對多的comments會跑不出來
       .catch(err => res.status(422).json(err))                      //必須使用toJSON()
-    }
-    
-  
-}
+  },
+  getFeeds: (req, res) => {
+    return Promise.all([
+      Restaurant.findAll({
+        limit: 10, raw: true, nest: true,
+        order: [['createdAt', 'DESC']], include: [Category] }),
+      Comment.findAll({
+        limit: 10, raw: true, nest: true,
+        order: [['createdAt', 'DESC']], include: [User, Restaurant]})
+    ])
+      .then(([restaurants, comments]) => {
+        return res.render('feeds', {
+          restaurants: restaurants,
+          comments: comments
+        })})}
+ }
 
 module.exports = restController

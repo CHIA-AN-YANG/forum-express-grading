@@ -40,6 +40,7 @@ module.exports = (app, passport) => {
 
   //common user
   app.get('/restaurants', authenticated, restController.getRestaurants)  
+  app.get('/restaurants/feeds', authenticated, restController.getFeeds)
   app.get('/restaurants/:id', authenticated, restController.getRestaurant)
   app.post('/comments', authenticated, commentController.postComment)
   app.get('/users/:id/edit', authenticated, userController.editUser)                    //(generate user page with edit btn)
