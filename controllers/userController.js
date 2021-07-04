@@ -56,7 +56,7 @@ const userController = {
   },
   getUser: (req, res) => {
     let isOwner = false
-    const owner = helpers.getUser(req)
+    const owner = req.user
     User.findByPk(req.params.id, { 
       include:{ 
         model:Comment, 
