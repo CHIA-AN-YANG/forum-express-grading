@@ -1,6 +1,8 @@
 const bcrypt = require('bcryptjs') 
 const db = require('../models')
 const User = db.User
+const Comment = db.Comment
+const Restaurant = db.Restaurant
 const fs = require('fs')
 const imgur = require('imgur-node-api')
 const { urlencoded } = require('express')
@@ -54,11 +56,16 @@ const userController = {
   },
   getUser: (req, res) => {
     let isOwner = false
-    const owner = req.user
-    User.findByPk(req.params.id, { raw:true, nest:true })  
+    const owner = helpers.getUser(req)
+    User.findByPk(req.params.id, { 
+      include:{ 
+        model:Comment, 
+        include:{ 
+          model: Restaurant
+        }}})  
       .then((user) => { 
         if (user.id == owner.id || owner.isAdmin) isOwner = true
-        res.render('user', { user, isOwner } )})                                                  
+        res.render('user', { user: user.toJSON(), isOwner } )})                                                  
       .catch(err => res.status(422).json(err))
     },
   editUser: (req, res) => {

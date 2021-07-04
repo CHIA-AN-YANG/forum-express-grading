@@ -18,6 +18,22 @@
   <form action="/users/{{user.id}}/edit" method="GET" style="display: inline;">
     <button type="submit" class="btn btn-small">Edit</button>
   </form>  
-{{/if}} 
+{{/if}}
+<br />
+<br />
+<h5>[所有評論]</h5> 
+{{#each user.Comments}}
+  {{#if ../currentuser.isAdmin}}
+  <form action="/comments/{{this.id}}?_method=DELETE" method="POST" style="float: right;">
+    <button type="submit" class="btn btn-danger">Delete</button>
+  </form>
+  {{/if}}
+  <blockquote class="blockquote mb-0">
+    <h6>餐廳名稱：<a href="/restaurants/{{this.Restaurant.id}}">{{this.Restaurant.name}}</a></h6>
+    <p>{{this.text}}</p>
+    <footer class="blockquote-footer">{{this.createdAt}}</footer>
+  </blockquote>
+  <hr />
+{{/each}}
 <br>
 <a href="javascript:history.back()">回上一頁</a>
