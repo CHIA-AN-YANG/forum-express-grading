@@ -9,19 +9,19 @@ module.exports = {
         type: Sequelize.INTEGER
       },
       name: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING(20)
       },
       tel: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING(20)
       },
       address: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING(127)
       },
       opening_hours: {
         type: Sequelize.STRING
       },
       description: {
-        type: Sequelize.TEXT
+        type: Sequelize.TEXT('tiny')
       },
       createdAt: {
         allowNull: false,

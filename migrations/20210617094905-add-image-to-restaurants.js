@@ -3,7 +3,7 @@
 module.exports = {
   up: async (queryInterface, Sequelize) => {
     queryInterface.addColumn('Restaurants', 'image', {
-      type: Sequelize.STRING,
+      type: Sequelize.STRING(200),
       defaultValue: "/upload/pic-replacement.jpg"
     })
   },
