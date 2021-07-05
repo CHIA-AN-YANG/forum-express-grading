@@ -9,7 +9,7 @@ module.exports = {
     address: faker.address.streetAddress(),
     opening_hours: '08:00',
     image: `https://loremflickr.com/320/240/restaurant,food/?random=${i}`,
-    description: faker.lorem.text().substring(30),
+    description: faker.lorem.text().substring(1,50),
     createdAt: new Date(),
     updatedAt: new Date(),
     CategoryId: Math.floor(Math.random() * 6) * 10 + 1,

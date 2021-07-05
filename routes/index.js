@@ -7,24 +7,32 @@ const categoryController = require('../controllers/categoryController.js')
 const passport = require('../config/passport')
 const multer = require('multer')
 const upload = multer({ dest: 'temp/' })
-//for test only
+//helpers is for test only
 const helpers = require('../_helpers.js')
-//req.isAuthenticated() => helpers.ensureAuthenticated(req)
-//req.user => helpers.getUser(req)
 
 module.exports = (app, passport) => {
-  
-  const authenticated = (req, res, next) => {
-    if (helpers.ensureAuthenticated(req)) { return next() }
-    res.redirect('/signin')}
+  const authenticated = (req, res, next) => {    
+    if (process.env.NODE_ENV === 'test'){
+      if (helpers.ensureAuthenticated(req)) { return next() }      
+    }else{ 
+      if (req.isAuthenticated()) { return next() } }
+    res.redirect('/signin')
+  }
 
   const authenticatedAdmin = (req, res, next) => {
-    if (helpers.ensureAuthenticated(req)) { 
-      if (helpers.getUser(req).isAdmin) { return next() }
+    if (process.env.NODE_ENV === 'test'){
+      if (helpers.ensureAuthenticated(req)) { 
+        if (helpers.getUser(req).isAdmin) { return next() }
+        return res.redirect('/')
+      }
+    }  
+    if (req.isAuthenticated()) { 
+      if (req.user.isAdmin) { return next() }
       return res.redirect('/')
     }
     res.redirect('/signin')
-  }  
+  }
+    
   //router info middleware
   if (process.env.NODE_ENV !== 'production') {
     app.use(function(req, res, next) {

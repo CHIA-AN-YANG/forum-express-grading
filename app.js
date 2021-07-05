@@ -4,9 +4,14 @@ const app = express()
 if (process.env.NODE_ENV !== 'production') {require('dotenv').config() }
 const PORT = process.env.PORT || 3000
 const helpers = require('./_helpers.js')
-//for test only
-//req.isAuthenticated() => helpers.ensureAuthenticated(req)
-//req.user => helpers.getUser(req)
+
+if (process.env.NODE_ENV === 'test'){
+  // for mocha test's requirement
+  app.use((req, res, next) => {
+    req.user = helpers.getUser(req)
+    next()})
+}
+
 
 app.engine('hbs', exphbs({ 
   defaultLayout: 'main',
@@ -36,7 +41,7 @@ app.use(flash())
 app.use((req, res, next) => {
   res.locals.success_messages = req.flash('success_messages')
   res.locals.warning_messages = req.flash('warning_messages')
-  res.locals.currentuser =helpers.getUser(req)
+  res.locals.currentuser =req.user
   next()
 })
 
