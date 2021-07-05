@@ -84,7 +84,7 @@ describe('# A19: 建立 User Profile', function() {
       this.getUser = sinon.stub(
         helpers, 'getUser'
       ).returns({id: 1});
-
+      await db.Comment.destroy({where: {},truncate: true})
       await db.User.destroy({where: {},truncate: true})
       await db.User.create({name: 'User1'})
     })
