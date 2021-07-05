@@ -48,11 +48,13 @@ const restController = {
   getRestaurant: (req, res) => {
     Restaurant.findByPk(req.params.id, {
       include:[Category, { model: Comment, include: [User]}],  //eager loading
-      })  
-      .then((restaurant) => { 
-        res.render('restaurant', { restaurant:restaurant.toJSON() } //看似可以用 raw:true nest:true 來簡化
-        )})                                                         //，實際上一對多的comments會跑不出來
-      .catch(err => res.status(422).json(err))                      //必須使用toJSON()
+      }) 
+      .then((restaurant) => {
+        restaurant.viewCounts ++
+        restaurant.save()
+        return res.render('restaurant', { restaurant:restaurant.toJSON() })
+      })                                                
+      .catch(err => res.status(422).json(err))                 
   },
   getFeeds: (req, res) => {
     return Promise.all([
@@ -67,7 +69,19 @@ const restController = {
         return res.render('feeds', {
           restaurants: restaurants,
           comments: comments
-        })})}
+        })})},
+  getDashboards: (req,res) => {
+    Promise.all([
+      Comment.count({where:{RestaurantId:req.params.id}}), //cmtCount
+      Restaurant.findByPk(req.params.id, {include: Category, raw:true, nest:true})
+    ])
+    .then(([cmtCount, restaurant]) => {
+      res.render('dashboard', {cmtCount, restaurant})
+    })
+    .catch(err => res.status(422).json(err))
+
+    
+  }
  }
 
 module.exports = restController

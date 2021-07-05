@@ -9,10 +9,10 @@ module.exports = {
         type: Sequelize.INTEGER
       },
       name: {
-        type: Sequelize.STRING(20)
+        type: Sequelize.STRING(30)
       },
       tel: {
-        type: Sequelize.STRING(20)
+        type: Sequelize.STRING(30)
       },
       address: {
         type: Sequelize.STRING(127)
@@ -21,7 +21,7 @@ module.exports = {
         type: Sequelize.STRING
       },
       description: {
-        type: Sequelize.TEXT('tiny')
+        type: Sequelize.TEXT
       },
       createdAt: {
         allowNull: false,

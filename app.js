@@ -36,7 +36,7 @@ app.use(flash())
 app.use((req, res, next) => {
   res.locals.success_messages = req.flash('success_messages')
   res.locals.warning_messages = req.flash('warning_messages')
-  res.locals.currentuser = req.user
+  res.locals.currentuser =helpers.getUser(req)
   next()
 })
 

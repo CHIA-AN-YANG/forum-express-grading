@@ -8,7 +8,7 @@ const imgur = require('imgur-node-api')
 const { urlencoded } = require('express')
 const IMGUR_CLIENT_ID = process.env.IMGUR_CLIENT_ID
 //for test only
-//const helpers = require('../_helpers.js')
+const helpers = require('../_helpers.js')
 //req.isAuthenticated() => helpers.ensureAuthenticated(req)
 //req.user => helpers.getUser(req)
 
@@ -56,7 +56,7 @@ const userController = {
   },
   getUser: (req, res) => {
     let isOwner = false
-    const owner = req.user
+    const owner = helpers.getUser(req)
     User.findByPk(req.params.id, { 
       include:{ 
         model:Comment, 
@@ -69,7 +69,7 @@ const userController = {
       .catch(err => res.status(422).json(err))
     },
   editUser: (req, res) => {
-    const owner = req.user
+    const owner = helpers.getUser(req)
     if(!owner.isAdmin && !(owner.id==req.params.id)){
       req.flash('warning_messages', "只有管理員有權限執行此操作。請登入管理員。")
       return res.redirect(`/users/${req.params.id}`)
