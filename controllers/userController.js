@@ -9,6 +9,12 @@ const { urlencoded } = require('express')
 const IMGUR_CLIENT_ID = process.env.IMGUR_CLIENT_ID
 //for test only
 const helpers = require('../_helpers.js')
+const getTestUser = function(req){
+if (process.env.NODE_ENV === 'test'){
+  return helpers.getUser(req)
+}else{ return req.user }
+}
+
 //req.isAuthenticated() => helpers.ensureAuthenticated(req)
 //req.user => helpers.getUser(req)
 
@@ -55,8 +61,9 @@ const userController = {
     res.redirect('signin')
   },
   getUser: (req, res) => {
+    getTestUser(req)
     let isOwner = false
-    const owner = helpers.getUser(req)
+    const owner = req.user
     User.findByPk(req.params.id, { 
       include:{ 
         model:Comment, 
@@ -69,7 +76,8 @@ const userController = {
       .catch(err => res.status(422).json(err))
     },
   editUser: (req, res) => {
-    const owner = helpers.getUser(req)
+    getTestUser(req)
+    const owner = req.user
     if(!owner.isAdmin && !(owner.id==req.params.id)){
       req.flash('warning_messages', "只有管理員有權限執行此操作。請登入管理員。")
       return res.redirect(`/users/${req.params.id}`)
