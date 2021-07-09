@@ -4,7 +4,11 @@ const Category = db.Category
 const User = db.User
 const Comment = db.Comment
 const pageLimit = 10                     //每頁10筆資料
-
+const getTestUser = function(req){
+  if (process.env.NODE_ENV === 'test'){
+    return helpers.getUser(req)
+  }else{ return req.user }
+  }
 
 
 
@@ -13,7 +17,7 @@ const restController = {
     let offset = 0                       //
     const whereQuery = {}
     let categoryId = ''
-    
+    const user = getTestUser(req)
     if (req.query.page) {
       offset = (req.query.page - 1) * pageLimit
     }
@@ -30,12 +34,12 @@ const restController = {
       const totalPage = Array.from({ length: pages }).map((item, index) => index + 1)
       const prev = page - 1 < 1 ? 1 : page - 1
       const next = page + 1 > pages ? pages : page + 1
-
       // clean up restaurant data
       const data = result.rows.map(r => ({
         ...r.dataValues,
         description: r.dataValues.description.substring(0, 50),
-        categoryName: r.dataValues.Category.name
+        categoryName: r.dataValues.Category.name,
+        isFavorited: user.FavoritedRestaurants.map(d => d.id).includes(r.id) //returns Boolean
       }))
       Category.findAll({ raw: true, nest: true })
       .then(categories => { return res.render('restaurants', {
@@ -46,13 +50,17 @@ const restController = {
   },
 
   getRestaurant: (req, res) => {
+    const user = getTestUser(req)
     Restaurant.findByPk(req.params.id, {
-      include:[Category, { model: Comment, include: [User]}],  //eager loading
+      include:[Category, 
+        { model: User, as: 'FavoritedUsers' },
+        { model: Comment, include: [User]}],  //eager loading
       }) 
       .then((restaurant) => {
         restaurant.viewCounts ++
         restaurant.save()
-        return res.render('restaurant', { restaurant:restaurant.toJSON() })
+        const isFavorited = restaurant.FavoritedUsers.map(d => d.id).includes(user.id)
+        return res.render('restaurant', { restaurant:restaurant.toJSON(), isFavorited })
       })                                                
       .catch(err => res.status(422).json(err))                 
   },

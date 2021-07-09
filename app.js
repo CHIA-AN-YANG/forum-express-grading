@@ -6,7 +6,6 @@ const PORT = process.env.PORT || 3000
 const helpers = require('./_helpers.js')
 
 if (process.env.NODE_ENV === 'test'){
-  // for mocha test's requirement
   app.use((req, res, next) => {
     req.user = helpers.getUser(req)
     next()})
@@ -16,7 +15,7 @@ if (process.env.NODE_ENV === 'test'){
 app.engine('hbs', exphbs({ 
   defaultLayout: 'main',
   extname: '.hbs',
-  helpers: require('./config/handlebars-helpers') 
+  helpers:  require('./config/handlebars-helpers') 
 })) 
 app.set('view engine', 'hbs')
 

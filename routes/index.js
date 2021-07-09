@@ -48,6 +48,8 @@ module.exports = (app, passport) => {
   app.get('/logout', userController.logout)
 
   //common user
+  app.post('/favorite/:restaurantId', authenticated, userController.addFavorite)
+  app.delete('/favorite/:restaurantId', authenticated, userController.removeFavorite)
   app.get('/restaurants', authenticated, restController.getRestaurants)  
   app.get('/restaurants/feeds', authenticated, restController.getFeeds)
   app.get('/restaurants/:id/dashboard', authenticated, restController.getDashboards)
