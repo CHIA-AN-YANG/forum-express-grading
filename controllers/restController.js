@@ -4,6 +4,7 @@ const Category = db.Category
 const User = db.User
 const Comment = db.Comment
 const pageLimit = 10                     //每頁10筆資料
+const helpers = require('../_helpers.js')
 const getTestUser = function(req){
   if (process.env.NODE_ENV === 'test'){
     return helpers.getUser(req)

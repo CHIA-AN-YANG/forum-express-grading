@@ -6,10 +6,6 @@ const Restaurant = db.Restaurant
 const Favorite = db.Favorite
 const Followship = db.Followship
 const Like = db.Like
-const fs = require('fs')
-const imgur = require('imgur-node-api')
-const { urlencoded } = require('express')
-const IMGUR_CLIENT_ID = process.env.IMGUR_CLIENT_ID
 //for test only
 const helpers = require('../_helpers.js')
 const getTestUser = function(req){
