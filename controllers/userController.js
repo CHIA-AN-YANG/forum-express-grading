@@ -18,8 +18,6 @@ if (process.env.NODE_ENV === 'test'){
 }else{ return req.user }
 }
 
-//req.isAuthenticated() => helpers.ensureAuthenticated(req)
-//req.user => helpers.getUser(req)
 
 const userController = {
   signUpPage: (req, res) => {
@@ -185,7 +183,7 @@ const userController = {
         isFollowed: req.user.Followings.map(d => d.id).includes(user.id)
       }))
       users = users.sort((a, b) => b.FollowerCount - a.FollowerCount)
-      return res.render('topUser', { users: users })
+      return res.render('topuser', { users: users })
     })
   },
   addFollowing: (req, res) => {

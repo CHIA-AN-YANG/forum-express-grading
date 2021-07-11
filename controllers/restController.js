@@ -11,8 +11,6 @@ const getTestUser = function(req){
   }else{ return req.user }
   }
 
-
-
 const restController = {
   getRestaurants: (req, res) => {
     let offset = 0                       //
@@ -116,7 +114,7 @@ const restController = {
       return data.slice(0, 9)      
     })
     .then(restaurants => {
-      return res.render('topRestaurant', { restaurants: restaurants })
+      return res.render('toprestaurant', { restaurants: restaurants })
     })
   },
  }
