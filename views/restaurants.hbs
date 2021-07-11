@@ -16,6 +16,9 @@
  <li class="nav-item">
   <a class="nav-link" href="/users/top">美食達人</a>
  </li>
+<li class="nav-item">
+  <a class="nav-link active" href="/restaurants/top">人氣餐廳</a>
+</li>
 </ul>
 <br/>
 <ul class="nav nav-pills">
@@ -43,9 +46,9 @@
           <span class="badge badge-secondary">{{this.categoryName}}</span>
           <p class="card-text">{{this.description}}</p>
           {{#if this.isFavorited}}
-          <form action="/favorite/{{this.id}}?_method=DELETE" method="POST" style="display:inline-block"><button type="submit" class="btn btn-danger">移除最愛</button></form>
+          <form action="/favorite/{{this.id}}?_method=DELETE" method="POST" style="display:inline-block"><button type="submit" class="btn btn-danger">移除收藏</button></form>
           {{else}}
-          <form action="/favorite/{{this.id}}" method="POST" style="display:inline-block"><button type="submit" class="btn btn-primary">加到最愛</button></form>
+          <form action="/favorite/{{this.id}}" method="POST" style="display:inline-block"><button type="submit" class="btn btn-primary">加到收藏</button></form>
           {{/if}}
             &nbsp;
           {{#if isLiked}}

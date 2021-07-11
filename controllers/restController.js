@@ -90,10 +90,27 @@ const restController = {
     .then(([cmtCount, restaurant]) => {
       res.render('dashboard', {cmtCount, restaurant})
     })
-    .catch(err => res.status(422).json(err))
-
-    
-  }
+    .catch(err => res.status(422).json(err))    
+  },
+  getTopRestaurant: (req, res) => {
+    const user = getTestUser(req)
+    return Restaurant.findAll({ include: [
+      { model: User, as: 'FavoritedUsers', raw:true, nest:true },
+    ]})
+    .then(restaurants => {
+      let data = restaurants.map(r => ({
+        ...r.dataValues,
+        favlength: r.dataValues.FavoritedUsers.length,
+        isFavorited: user.FavoritedRestaurants.map(d => d.id).includes(r.id),
+      }))
+      data.sort(function(a, b){ return b.favlength - a.favlength})
+      return data.slice(0, 9)      
+    })
+    .then(restaurants => {
+      console.log(restaurants)
+      return res.render('topRestaurant', { restaurants: restaurants })
+    })
+  },
  }
 
 module.exports = restController

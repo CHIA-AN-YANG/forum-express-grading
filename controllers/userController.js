@@ -85,8 +85,8 @@ const userController = {
     .then((user) => { res.render('userEdit', { user })})
   },
   putUser: (req, res) => {
-    const { file } = req 
-    if(!req.body.name){
+    const { file, name, email, description } = req 
+    if(!name){
       req.flash('warning_messages', "name doesn't exist")
       return res.redirect('back')
     }
@@ -97,9 +97,9 @@ const userController = {
           return User.findByPk(req.params.id)          
           .then((user) => {
             user.update({
-              name: req.body.name,
-              email: req.body.email,
-              description: req.body.description,
+              name: name,
+              email: email,
+              description: description,
               image: file ? img.data.link : user.image
             })                        
           })          
@@ -111,13 +111,12 @@ const userController = {
     } else {
       User.findByPk(req.params.id)
       .then((user) => {
-        user.update({
-          name: req.body.name,
-          email: req.body.email,
-          description: req.body.description
-        }) 
+        user.name=name
+        user.email=email
+        user.description=description
+        user.save()
       })
-      .then(() => {
+      .then((user) => {
         req.flash('success_messages', '個人資料已成功更新！')
         return res.redirect(`/users/${req.params.id}`)
       })
