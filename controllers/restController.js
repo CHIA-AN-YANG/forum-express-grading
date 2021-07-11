@@ -36,13 +36,17 @@ const restController = {
       const prev = page - 1 < 1 ? 1 : page - 1
       const next = page + 1 > pages ? pages : page + 1
       // clean up restaurant data
-      const data = result.rows.map(r => ({
+      const data = result.rows.map(r => {
+        const str = r.dataValues.description
+        let shortenStr = str.split(' ').slice(0,15).join(" ")
+        return {
         ...r.dataValues,
-        description: r.dataValues.description.substring(0, 50),
+        description: shortenStr+"...",
         categoryName: r.dataValues.Category.name,
         isFavorited: user.FavoritedRestaurants.map(d => d.id).includes(r.id), 
         isLiked: user.LikedRestaurants.map(d => d.id).includes(r.id) 
-      }))
+      }
+    })
       Category.findAll({ raw: true, nest: true })
       .then(categories => { return res.render('restaurants', {
           restaurants: data, categories, categoryId, page, totalPage, prev, next 
@@ -68,6 +72,7 @@ const restController = {
       })                                                
       .catch(err => res.status(422).json(err))                 
   },
+  
   getFeeds: (req, res) => {
     return Promise.all([
       Restaurant.findAll({
@@ -82,6 +87,7 @@ const restController = {
           restaurants: restaurants,
           comments: comments
         })})},
+
   getDashboards: (req,res) => {
     Promise.all([
       Comment.count({where:{RestaurantId:req.params.id}}), //cmtCount
@@ -92,22 +98,24 @@ const restController = {
     })
     .catch(err => res.status(422).json(err))    
   },
+
   getTopRestaurant: (req, res) => {
     const user = getTestUser(req)
     return Restaurant.findAll({ include: [
       { model: User, as: 'FavoritedUsers', raw:true, nest:true },
+      { model: User, as: 'LikedUsers', raw:true, nest:true }
     ]})
     .then(restaurants => {
       let data = restaurants.map(r => ({
         ...r.dataValues,
         favlength: r.dataValues.FavoritedUsers.length,
         isFavorited: user.FavoritedRestaurants.map(d => d.id).includes(r.id),
+        isLiked: user.LikedRestaurants.map(d => d.id).includes(r.id),
       }))
       data.sort(function(a, b){ return b.favlength - a.favlength})
       return data.slice(0, 9)      
     })
     .then(restaurants => {
-      console.log(restaurants)
       return res.render('topRestaurant', { restaurants: restaurants })
     })
   },

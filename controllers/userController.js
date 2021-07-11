@@ -85,7 +85,8 @@ const userController = {
     .then((user) => { res.render('userEdit', { user })})
   },
   putUser: (req, res) => {
-    const { file, name, email, description } = req 
+    const { file } = req 
+    const { name, email, description } = req.body
     if(!name){
       req.flash('warning_messages', "name doesn't exist")
       return res.redirect('back')

@@ -6,7 +6,8 @@ module.exports = {
       type: Sequelize.STRING(255)
     })
     await queryInterface.addColumn('Users', 'image', {
-      type: Sequelize.STRING(127)
+      type: Sequelize.STRING(127),
+      defaultValue: 'https://cdn.dribbble.com/users/3117394/screenshots/6979664/kaonashi_still_2x.gif'
     })
   },
   down: async (queryInterface, Sequelize) => {
