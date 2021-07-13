@@ -111,7 +111,7 @@ const restController = {
         isLiked: user.LikedRestaurants.map(d => d.id).includes(r.id),
       }))
       data.sort(function(a, b){ return b.favlength - a.favlength})
-      return data.slice(0, 9)      
+      return data.slice(0, 10)      
     })
     .then(restaurants => {
       return res.render('toprestaurant', { restaurants: restaurants })
