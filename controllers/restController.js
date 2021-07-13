@@ -1,4 +1,5 @@
 const db = require('../models')
+var Sequelize = require('sequelize')
 const Restaurant = db.Restaurant
 const Category = db.Category
 const User = db.User
@@ -99,24 +100,26 @@ const restController = {
 
   getTopRestaurant: (req, res) => {
     const user = getTestUser(req)
-    return Restaurant.findAll({ include: [
-      { model: User, as: 'FavoritedUsers', raw:true, nest:true },
-      { model: User, as: 'LikedUsers', raw:true, nest:true }
-    ]})
-    .then(restaurants => {
-      let data = restaurants.map(r => ({
-        ...r.dataValues,
-        favlength: r.dataValues.FavoritedUsers.length,
-        isFavorited: user.FavoritedRestaurants.map(d => d.id).includes(r.id),
-        isLiked: user.LikedRestaurants.map(d => d.id).includes(r.id),
-      }))
-      data.sort(function(a, b){ return b.favlength - a.favlength})
-      return data.slice(0, 10)      
-    })
-    .then(restaurants => {
+    return Restaurant.findAll({ 
+      include: [
+      { model: User, as: 'FavoritedUsers', raw:true },
+      { model: User, as: 'LikedUsers', raw:true },
+    ],})
+  .then(restaurants => {
+    let data = restaurants.map(r => ({
+      ...r.dataValues,
+      favlength: r.dataValues.FavoritedUsers.length,
+      isFavorited: user.FavoritedRestaurants.map(d => d.id).includes(r.id),
+      isLiked: user.LikedRestaurants.map(d => d.id).includes(r.id),
+    }))
+    data.sort(function(a, b){ return b.favlength - a.favlength})
+    return data.slice(0, 10)  
+  })
+  .then(restaurants => {
       return res.render('toprestaurant', { restaurants: restaurants })
     })
   },
  }
 
 module.exports = restController
+
