@@ -1,10 +1,7 @@
+
 const db = require('../models')
-var Sequelize = require('sequelize')
-const Restaurant = db.Restaurant
-const Category = db.Category
-const User = db.User
-const Comment = db.Comment
-const pageLimit = 10                     //每頁10筆資料
+const { Restaurant, Category, User, Comment, sequelize } = db
+const pageLimit = 10  
 const helpers = require('../_helpers.js')
 const getTestUser = function(req){
   if (process.env.NODE_ENV === 'test'){
@@ -14,7 +11,7 @@ const getTestUser = function(req){
 
 const restController = {
   getRestaurants: (req, res) => {
-    let offset = 0                       //
+    let offset = 0            
     const whereQuery = {}
     let categoryId = ''
     const user = getTestUser(req)
@@ -98,28 +95,24 @@ const restController = {
     .catch(err => res.status(422).json(err))    
   },
 
-  getTopRestaurant: (req, res) => {
+  getTopRestaurant: async (req, res) => {
     const user = getTestUser(req)
-    return Restaurant.findAll({ 
-      include: [
-      { model: User, as: 'FavoritedUsers', raw:true },
-      { model: User, as: 'LikedUsers', raw:true },
-    ],})
-  .then(restaurants => {
-    let data = restaurants.map(r => ({
-      ...r.dataValues,
-      favlength: r.dataValues.FavoritedUsers.length,
-      isFavorited: user.FavoritedRestaurants.map(d => d.id).includes(r.id),
-      isLiked: user.LikedRestaurants.map(d => d.id).includes(r.id),
-    }))
-    data.sort(function(a, b){ return b.favlength - a.favlength})
-    return data.slice(0, 10)  
-  })
-  .then(restaurants => {
-      return res.render('toprestaurant', { restaurants: restaurants })
+    const query1 = `
+    SELECT Restaurants.id, Restaurants.name, Restaurants.image, 
+    COUNT(Favorites.id) FavoritesCount, Favorites.UserId AS fav_userid
+    FROM Restaurants LEFT JOIN Favorites ON Restaurants.id = Favorites.RestaurantId
+    GROUP BY Restaurants.id
+    ORDER BY FavoritesCount DESC, Restaurants.id ASC
+    LIMIT 10;`
+    const restaurants = await sequelize.query(query1)
+    restaurants.forEach( el => {
+      el.forEach( el => {if(el.fav_userid === user.id){el.isFavorited = true}})
     })
+    return res.render('toprestaurant', { restaurants: restaurants[0] })
   },
  }
 
 module.exports = restController
+
+
 
