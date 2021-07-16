@@ -105,10 +105,24 @@ const restController = {
     ORDER BY FavoritesCount DESC, Restaurants.id ASC
     LIMIT 10;`
     const restaurants = await sequelize.query(query1)
-    restaurants.forEach( el => {
-      el.forEach( el => {if(el.fav_userid === user.id){el.isFavorited = true}})
+    const getFavLike = async (el1) => {
+      el1.isFavorited = false
+      await Restaurant.findByPk(el1.id, { include:[
+        { model: User, as: 'FavoritedUsers' },
+        { model: User, as: 'LikedUsers' }, ]})
+      .then( r => {
+        el1.isFavorited= user.FavoritedRestaurants.map(d => d.id).includes(r.id)
+        el1.isLiked= user.LikedRestaurants.map(d => d.id).includes(r.id)
+        return
+      })
+      .catch(err => console.error(err))
+      return el1
+    }
+
+    const promiseArr = restaurants[0].map( el1 => getFavLike(el1))
+    Promise.all(promiseArr).then(resArr => {
+      res.render('toprestaurant', {restaurants:resArr})
     })
-    return res.render('toprestaurant', { restaurants: restaurants[0] })
   },
  }
 
