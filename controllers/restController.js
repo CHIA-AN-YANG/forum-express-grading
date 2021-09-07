@@ -4,6 +4,7 @@ const Category = db.Category
 const User = db.User
 const Comment = db.Comment
 const pageLimit = 10                     //每頁10筆資料
+const helpers = require('../_helpers.js')
 const getTestUser = function(req){
   if (process.env.NODE_ENV === 'test'){
     return helpers.getUser(req)
@@ -39,7 +40,8 @@ const restController = {
         ...r.dataValues,
         description: r.dataValues.description.substring(0, 50),
         categoryName: r.dataValues.Category.name,
-        isFavorited: user.FavoritedRestaurants.map(d => d.id).includes(r.id) //returns Boolean
+        isFavorited: user.FavoritedRestaurants.map(d => d.id).includes(r.id), 
+        isLiked: user.LikedRestaurants.map(d => d.id).includes(r.id) 
       }))
       Category.findAll({ raw: true, nest: true })
       .then(categories => { return res.render('restaurants', {
@@ -54,13 +56,15 @@ const restController = {
     Restaurant.findByPk(req.params.id, {
       include:[Category, 
         { model: User, as: 'FavoritedUsers' },
+        { model: User, as: 'LikedUsers' },
         { model: Comment, include: [User]}],  //eager loading
       }) 
       .then((restaurant) => {
         restaurant.viewCounts ++
         restaurant.save()
         const isFavorited = restaurant.FavoritedUsers.map(d => d.id).includes(user.id)
-        return res.render('restaurant', { restaurant:restaurant.toJSON(), isFavorited })
+        const isLiked = restaurant.LikedUsers.map(d => d.id).includes(user.id)
+        return res.render('restaurant', { restaurant:restaurant.toJSON(), isFavorited, isLiked })
       })                                                
       .catch(err => res.status(422).json(err))                 
   },

@@ -48,6 +48,9 @@ module.exports = (app, passport) => {
   app.get('/logout', userController.logout)
 
   //common user
+  
+  app.post('/like/:restaurantId', authenticated, userController.addLike)
+  app.delete('/like/:restaurantId', authenticated, userController.removeLike)
   app.post('/favorite/:restaurantId', authenticated, userController.addFavorite)
   app.delete('/favorite/:restaurantId', authenticated, userController.removeFavorite)
   app.get('/restaurants', authenticated, restController.getRestaurants)  
@@ -55,6 +58,9 @@ module.exports = (app, passport) => {
   app.get('/restaurants/:id/dashboard', authenticated, restController.getDashboards)
   app.get('/restaurants/:id', authenticated, restController.getRestaurant)
   app.post('/comments', authenticated, commentController.postComment)
+  app.post('/following/:userId', authenticated, userController.addFollowing)
+  app.delete('/following/:userId', authenticated, userController.removeFollowing)
+  app.get('/users/top', authenticated, userController.getTopUser)
   app.get('/users/:id/edit', authenticated, userController.editUser)                    //(generate user page with edit btn)
   app.get('/users/:id', authenticated, userController.getUser)                          //(generate edit user page)
   app.put('/users/:id', authenticated, upload.single('image'), userController.putUser)  //admin and account owner can edit profile of all users

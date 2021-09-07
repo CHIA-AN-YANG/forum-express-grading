@@ -4,10 +4,8 @@ const User = db.User
 const Comment = db.Comment
 const Restaurant = db.Restaurant
 const Favorite = db.Favorite
-const fs = require('fs')
-const imgur = require('imgur-node-api')
-const { urlencoded } = require('express')
-const IMGUR_CLIENT_ID = process.env.IMGUR_CLIENT_ID
+const Followship = db.Followship
+const Like = db.Like
 //for test only
 const helpers = require('../_helpers.js')
 const getTestUser = function(req){
@@ -147,7 +145,67 @@ const userController = {
             return res.redirect('back')
           })
       })
-  }
+  },
+  addLike: (req, res) => {
+    const user = getTestUser(req)
+    return Like.create({
+      UserId: user.id,
+      RestaurantId: req.params.restaurantId
+    })
+      .then((restaurant) => { return res.redirect('back') })
+  },
+  removeLike: (req, res) => {
+    const user = getTestUser(req)
+    return Like.findOne({
+      where: {
+        UserId: user.id,
+        RestaurantId: req.params.restaurantId
+      }
+    })
+      .then((like) => {
+        like.destroy()
+          .then((restaurant) => {
+            return res.redirect('back')
+          })
+      })
+  },
+  getTopUser: (req, res) => {
+    return User.findAll({
+      include: [
+        { model: User, as: 'Followers' }
+      ]
+    }).then(users => {
+      users = users.map(user => ({
+        ...user.dataValues,
+        FollowerCount: user.Followers.length,
+        isFollowed: req.user.Followings.map(d => d.id).includes(user.id)
+      }))
+      users = users.sort((a, b) => b.FollowerCount - a.FollowerCount)
+      return res.render('topUser', { users: users })
+    })
+  },
+  addFollowing: (req, res) => {
+    return Followship.create({
+      followerId: req.user.id,
+      followingId: req.params.userId
+    })
+     .then((followship) => {
+       return res.redirect('back')
+     })
+   },
+   
+   removeFollowing: (req, res) => {
+    return Followship.findOne({where: {
+      followerId: req.user.id,
+      followingId: req.params.userId
+    }})
+      .then((followship) => {
+        followship.destroy()
+         .then((followship) => {
+           return res.redirect('back')
+         })
+      })
+   }
 }
 
 module.exports = userController
