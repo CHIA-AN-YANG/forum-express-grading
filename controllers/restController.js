@@ -1,9 +1,7 @@
+
 const db = require('../models')
-const Restaurant = db.Restaurant
-const Category = db.Category
-const User = db.User
-const Comment = db.Comment
-const pageLimit = 10                     //每頁10筆資料
+const { Restaurant, Category, User, Comment, sequelize } = db
+const pageLimit = 10  
 const helpers = require('../_helpers.js')
 const getTestUser = function(req){
   if (process.env.NODE_ENV === 'test'){
@@ -11,11 +9,9 @@ const getTestUser = function(req){
   }else{ return req.user }
   }
 
-
-
 const restController = {
   getRestaurants: (req, res) => {
-    let offset = 0                       //
+    let offset = 0            
     const whereQuery = {}
     let categoryId = ''
     const user = getTestUser(req)
@@ -36,13 +32,17 @@ const restController = {
       const prev = page - 1 < 1 ? 1 : page - 1
       const next = page + 1 > pages ? pages : page + 1
       // clean up restaurant data
-      const data = result.rows.map(r => ({
+      const data = result.rows.map(r => {
+        const str = r.dataValues.description
+        let shortenStr = str.split(' ').slice(0,15).join(" ")
+        return {
         ...r.dataValues,
-        description: r.dataValues.description.substring(0, 50),
+        description: shortenStr+"...",
         categoryName: r.dataValues.Category.name,
         isFavorited: user.FavoritedRestaurants.map(d => d.id).includes(r.id), 
         isLiked: user.LikedRestaurants.map(d => d.id).includes(r.id) 
-      }))
+      }
+    })
       Category.findAll({ raw: true, nest: true })
       .then(categories => { return res.render('restaurants', {
           restaurants: data, categories, categoryId, page, totalPage, prev, next 
@@ -68,6 +68,7 @@ const restController = {
       })                                                
       .catch(err => res.status(422).json(err))                 
   },
+  
   getFeeds: (req, res) => {
     return Promise.all([
       Restaurant.findAll({
@@ -82,6 +83,7 @@ const restController = {
           restaurants: restaurants,
           comments: comments
         })})},
+
   getDashboards: (req,res) => {
     Promise.all([
       Comment.count({where:{RestaurantId:req.params.id}}), //cmtCount
@@ -90,10 +92,41 @@ const restController = {
     .then(([cmtCount, restaurant]) => {
       res.render('dashboard', {cmtCount, restaurant})
     })
-    .catch(err => res.status(422).json(err))
+    .catch(err => res.status(422).json(err))    
+  },
 
-    
-  }
+  getTopRestaurant: async (req, res) => {
+    const user = getTestUser(req)
+    const query1 = `
+    SELECT Restaurants.id, Restaurants.name, Restaurants.image, 
+    COUNT(Favorites.id) FavoritesCount, Favorites.UserId AS fav_userid
+    FROM Restaurants LEFT JOIN Favorites ON Restaurants.id = Favorites.RestaurantId
+    GROUP BY Restaurants.id
+    ORDER BY FavoritesCount DESC, Restaurants.id ASC
+    LIMIT 10;`
+    const restaurants = await sequelize.query(query1)
+    const getFavLike = async (el1) => {
+      el1.isFavorited = false
+      await Restaurant.findByPk(el1.id, { include:[
+        { model: User, as: 'FavoritedUsers' },
+        { model: User, as: 'LikedUsers' }, ]})
+      .then( r => {
+        el1.isFavorited= user.FavoritedRestaurants.map(d => d.id).includes(r.id)
+        el1.isLiked= user.LikedRestaurants.map(d => d.id).includes(r.id)
+        return
+      })
+      .catch(err => console.error(err))
+      return el1
+    }
+
+    const promiseArr = restaurants[0].map( el1 => getFavLike(el1))
+    Promise.all(promiseArr).then(resArr => {
+      res.render('toprestaurant', {restaurants:resArr})
+    })
+  },
  }
 
 module.exports = restController
+
+
+

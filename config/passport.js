@@ -27,7 +27,7 @@ passport.serializeUser((user, cb) => {
 })
 passport.deserializeUser((id, cb) => {
   User.findByPk(id, {include: [ 
-    { model: Restaurant, as: 'FavoritedRestaurants' },
+    { model: Restaurant, as: 'FavoritedRestaurants' }, //去Restaurant找彼此的junction table裡有FavoritedRestaurants的row
     { model: Restaurant, as: 'LikedRestaurants' },
     { model: User, as: 'Followers' },
     { model: User, as: 'Followings' } ]})
