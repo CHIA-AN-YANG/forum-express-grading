@@ -16,6 +16,7 @@
     "logging": false
   },
   "production": {
+    "username": "root",
     "use_env_variable": "CLEARDB_DATABASE_URL",
     "dialect": "mysql",
     "host": "127.0.0.1",
