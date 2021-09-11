@@ -97,29 +97,29 @@ const restController = {
 
   getTopRestaurant: async (req, res) => {
     const user = getTestUser(req)
-    const query1 = `
+    const query = `
     SELECT Restaurants.id, Restaurants.name, Restaurants.image, 
     COUNT(Favorites.id) FavoritesCount, Favorites.UserId AS fav_userid
     FROM Restaurants LEFT JOIN Favorites ON Restaurants.id = Favorites.RestaurantId
     GROUP BY Restaurants.id
     ORDER BY FavoritesCount DESC, Restaurants.id ASC
     LIMIT 10;`
-    const restaurants = await sequelize.query(query1)
-    const getFavLike = async (el1) => {
-      el1.isFavorited = false
-      await Restaurant.findByPk(el1.id, { include:[
+    const restaurants = await sequelize.query(query)
+    const getFavoriteAndLikedRestaurants = async (restaurant) => {
+      restaurant.isFavorited = false
+      await Restaurant.findByPk(restaurant.id, { include:[
         { model: User, as: 'FavoritedUsers' },
         { model: User, as: 'LikedUsers' }, ]})
-      .then( r => {
-        el1.isFavorited= user.FavoritedRestaurants.map(d => d.id).includes(r.id)
-        el1.isLiked= user.LikedRestaurants.map(d => d.id).includes(r.id)
+      .then( restaurantData => {
+        restaurant.isFavorited= user.FavoritedRestaurants.map(d => d.id).includes(restaurantData.id)
+        restaurant.isLiked= user.LikedRestaurants.map(d => d.id).includes(restaurantData.id)
         return
       })
       .catch(err => console.error(err))
-      return el1
+      return restaurant
     }
 
-    const promiseArr = restaurants[0].map( el1 => getFavLike(el1))
+    const promiseArr = restaurants[0].map( restaurant => getFavoriteAndLikedRestaurants(restaurant))
     Promise.all(promiseArr).then(resArr => {
       res.render('toprestaurant', {restaurants:resArr})
     })

@@ -62,9 +62,8 @@ const userController = {
     res.redirect('signin')
   },
   getUser: (req, res) => {
-    getTestUser(req)
-    let isOwner = false
-    const owner = req.user
+    let isEditable = false
+    const requester = req.user
     User.findByPk(req.params.id, { 
       include:{ 
         model:Comment, 
@@ -72,14 +71,13 @@ const userController = {
           model: Restaurant
         }}})  
       .then((user) => { 
-        if (user.id == owner.id || owner.isAdmin) isOwner = true
-        res.render('user', { user: user.toJSON(), isOwner } )})                                                  
+        if (Number(requester.id) === Number(user.id) || requester.isAdmin) isEditable = true;
+        res.render("user", { user: user.toJSON(), isEditable });})      
       .catch(err => res.status(422).json(err))
-    },
+  },
   editUser: (req, res) => {
-    getTestUser(req)
-    const owner = req.user
-    if(!owner.isAdmin && !(owner.id==req.params.id)){
+    const requester = req.user
+    if (Number(requester.id) !== Number(req.params.id) && !requester.isAdmin) {
       req.flash('warning_messages', "只有管理員有權限執行此操作。請登入管理員。")
       return res.redirect(`/users/${req.params.id}`)
     }
@@ -87,11 +85,12 @@ const userController = {
     .then((user) => { res.render('userEdit', { user })})
   },
   putUser: (req, res) => {
-    const { file } = req 
+    const { file } = req
     const { name, email, description } = req.body
-    if(!name){
-      req.flash('warning_messages', "name doesn't exist")
-      return res.redirect('back')
+    const requester = req.user
+    if (Number(requester.id) !== Number(req.params.id) && !requester.isAdmin) {
+      req.flash('warning_messages', "只有管理員有權限執行此操作。請登入管理員。")
+      return res.redirect(`/users/${req.params.id}`)
     }
     if (file) {
       imgur.setClientID(IMGUR_CLIENT_ID)
